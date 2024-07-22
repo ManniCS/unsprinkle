@@ -1,46 +1,30 @@
 import React from 'react';
 import styled from 'styled-components/macro';
 
-const SrcSet = ({ src, fileType }) => {
-  console.log({src}, {fileType});
-  const arr = Array.from({ length: 3 }, (_, idx) => idx); // Create an array [0, 1, 2]
-
-  return (
-    <>
-      {arr.map((idx) => {
-        const ratio = idx + 1;
-        let modifiedSrc = src;
-        if (ratio > 1) {
-          modifiedSrc = src.replace('.jpg', `@${ratio}x.${fileType}`);
-        }
-        return (
-          <source key={idx} srcSet={`${modifiedSrc} ${ratio}x`} />
-        );
-      })}
-    </>
-  );
-};
-
-const Picture = ({src}) => { 
-
-  return (
-    <picture>
-      {
-        ['avif', 'jpg'].map((suffix) => (
-          <SrcSet key ={suffix} src={src} fileType={suffix}/>
-        ))
-      }
-    <Image src={src} />
-    </picture>
-  );
-}
-
 const PhotoGridItem = ({ id, src, alt, tags }) => {
   return (
     <div>
       <article>
         <Anchor href={`/photos/${id}`}>
-          <Picture src={src}/>
+          <picture>
+            <source
+              type="image/avif"
+              srcSet={`
+                ${src.replace('.jpg', '.avif')} 1x,
+                ${src.replace('.jpg', '@2x.avif')} 2x,
+                ${src.replace('.jpg', '@3x.avif')} 3x
+              `}
+            />
+            <source
+              type="image/jpeg"
+              srcSet={`
+                ${src} 1x,
+                ${src.replace('.jpg', '@2x.jpg')} 2x,
+                ${src.replace('.jpg', '@3x.jpg')} 3x
+              `}
+            />
+            <Image src={src} />
+          </picture>
         </Anchor>
         <Tags>
           {tags.map((tag) => (
