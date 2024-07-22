@@ -1,18 +1,54 @@
 import React from 'react';
 import styled from 'styled-components/macro';
 
+const SrcSet = ({ src, fileType }) => {
+  console.log({src}, {fileType});
+  const arr = Array.from({ length: 3 }, (_, idx) => idx); // Create an array [0, 1, 2]
+
+  return (
+    <>
+      {arr.map((idx) => {
+        const ratio = idx + 1;
+        let modifiedSrc = src;
+        if (ratio > 1) {
+          modifiedSrc = src.replace('.jpg', `@${ratio}x.${fileType}`);
+        }
+        return (
+          <source key={idx} srcSet={`${modifiedSrc} ${ratio}x`} />
+        );
+      })}
+    </>
+  );
+};
+
+const Picture = ({src}) => { 
+
+  return (
+    <picture>
+      {
+        ['avif', 'jpg'].map((suffix) => (
+          <SrcSet key ={suffix} src={src} fileType={suffix}/>
+        ))
+      }
+    <Image src={src} />
+    </picture>
+  );
+}
+
 const PhotoGridItem = ({ id, src, alt, tags }) => {
   return (
-    <article>
-      <Anchor href={`/photos/${id}`}>
-        <Image src={src} />
-      </Anchor>
-      <Tags>
-        {tags.map((tag) => (
-          <Tag key={tag}>{tag}</Tag>
-        ))}
-      </Tags>
-    </article>
+    <div>
+      <article>
+        <Anchor href={`/photos/${id}`}>
+          <Picture src={src}/>
+        </Anchor>
+        <Tags>
+          {tags.map((tag) => (
+            <Tag key={tag}>{tag}</Tag>
+          ))}
+        </Tags>
+      </article>
+    </div>
   );
 };
 
@@ -26,6 +62,7 @@ const Image = styled.img`
   display: block;
   width: 100%;
   height: 300px;
+  object-fit: cover;
   border-radius: 2px;
   margin-bottom: 8px;
 `;
